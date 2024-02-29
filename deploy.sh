@@ -1,14 +1,31 @@
 #!/bin/bash
 
-install_nvim(){
+install_nvim() {
     echo "installing nvim..."
-    curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-    sudo rm -rf /opt/nvim
-    sudo tar -C /opt -xzf nvim-linux64.tar.gz
-    sudo rm -rf nvim-linux64.tar.gz
-    echo "adding nvim to path..."
-    echo 'export PATH="$PATH:/opt/nvim-linux64/bin"' >> "$HOME/.bashrc"
-    source "$HOME/.bashrc"  # Reload the bash profile to apply changes immediately
+    
+    # Check the operating system
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux
+        curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # MacOS
+        curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-macos.tar.gz
+    else
+        echo "Unsupported operating system: $OSTYPE"
+        exit 1
+    fi
+    
+    if [ $? -eq 0 ]; then
+        sudo rm -rf /opt/nvim
+        sudo tar -C /opt -xzf nvim-*.tar.gz
+        sudo rm -rf nvim-*.tar.gz
+        echo "adding nvim to path..."
+        echo 'export PATH="$PATH:/opt/nvim-linux64/bin"' >> "$HOME/.bashrc"
+        source "$HOME/.bashrc"  # Reload the bash profile to apply changes immediately
+    else
+        echo "Failed to download Neovim. Please check your internet connection."
+        exit 1
+    fi
 }
 
 deploy_config(){
