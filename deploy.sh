@@ -7,7 +7,8 @@ install_nvim(){
     sudo tar -C /opt -xzf nvim-linux64.tar.gz
     sudo rm -rf nvim-linux64.tar.gz
     echo "adding nvim to path..."
-    export PATH="$PATH:/opt/nvim-linux64/bin"
+    echo 'export PATH="$PATH:/opt/nvim-linux64/bin"' >> "$HOME/.bashrc"
+    source "$HOME/.bashrc"  # Reload the bash profile to apply changes immediately
 }
 
 deploy_config(){
