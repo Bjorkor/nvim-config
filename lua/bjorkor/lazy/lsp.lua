@@ -19,7 +19,7 @@ return {
 
             require('mason').setup({})
             require('mason-lspconfig').setup({
-                ensure_installed = {"pyright"},
+                ensure_installed = {"pyright", "lua_ls", "bashls"},
                 handlers = {
                     lsp_zero.default_setup,
                 },
