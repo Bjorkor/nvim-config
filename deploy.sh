@@ -35,7 +35,7 @@ deploy_config(){
     destination_path="$HOME/.config/nvim"
 
     # Copy files from script directory to destination
-    cp -r "$script_dir"/* "$destination_path"
+    rsync -a --delete "$script_dir"/ "$destination_path"
 
     # Check if the copy was successful
     if [ $? -eq 0 ]; then
