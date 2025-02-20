@@ -22,6 +22,9 @@ return {
             vim.lsp.protocol.make_client_capabilities(),
             cmp_lsp.default_capabilities())
 
+        local lspconfig = require('lspconfig')
+        lspconfig.gdscript.setup({})
+
         require("fidget").setup({})
         require("mason").setup()
         require("mason-lspconfig").setup({
@@ -29,11 +32,9 @@ return {
                 "pyright",
                 "lua_ls",
                 "rust_analyzer",
-                "tsserver",
             },
             handlers = {
-                function(server_name) -- default handler (optional)
-
+                function(server_name)
                     require("lspconfig")[server_name].setup {
                         capabilities = capabilities
                     }
@@ -55,12 +56,23 @@ return {
             }
         })
 
+        -- Set tab-based indentation for GDScript
+        vim.api.nvim_create_autocmd("FileType", {
+            pattern = "gdscript",
+            callback = function()
+                vim.bo.expandtab = false  -- Use tabs instead of spaces
+                vim.bo.tabstop = 4
+                vim.bo.shiftwidth = 4
+                vim.bo.softtabstop = 4
+            end,
+        })
+
         local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
         cmp.setup({
             snippet = {
                 expand = function(args)
-                    require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                    require('luasnip').lsp_expand(args.body)
                 end,
             },
             mapping = cmp.mapping.preset.insert({
@@ -71,14 +83,13 @@ return {
             }),
             sources = cmp.config.sources({
                 { name = 'nvim_lsp' },
-                { name = 'luasnip' }, -- For luasnip users.
+                { name = 'luasnip' },
             }, {
-                    { name = 'buffer' },
-                })
+                { name = 'buffer' },
+            })
         })
 
         vim.diagnostic.config({
-            -- update_in_insert = true,
             float = {
                 focusable = false,
                 style = "minimal",
