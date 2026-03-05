@@ -1,8 +1,12 @@
 return {
     "neovim/nvim-lspconfig",
+    version = "v1.1.0",
     dependencies = {
         "williamboman/mason.nvim",
-        "williamboman/mason-lspconfig.nvim",
+        {
+            "williamboman/mason-lspconfig.nvim",
+            version = "1.30.0",
+        },
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-path",
@@ -32,7 +36,6 @@ return {
             },
             handlers = {
                 function(server_name) -- default handler (optional)
-
                     require("lspconfig")[server_name].setup {
                         capabilities = capabilities
                     }

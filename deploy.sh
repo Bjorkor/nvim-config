@@ -1,12 +1,9 @@
 #!/bin/bash
 
 # --- Configuration ---
-VERSION="v0.9.5"
-ASSET_NAME="nvim-linux64.tar.gz"
+VERSION="v0.10.4"
+ASSET_NAME="nvim-linux-x86_64.appimage"
 DOWNLOAD_URL="https://github.com/neovim/neovim/releases/download/$VERSION/$ASSET_NAME"
-EXTRACT_DIR_NAME="nvim-linux64"
-INSTALL_PATH="/opt/$EXTRACT_DIR_NAME"
-BIN_PATH="$INSTALL_PATH/bin"
 # --- End Configuration ---
 
 # This function installs/updates to a specific Neovim version
@@ -21,17 +18,25 @@ install_nvim(){
         # Check if download was successful (file exists and is not empty)
         if [ ! -s "$ASSET_NAME" ]; then
             echo "Error: Download failed or file is empty."
-            sudo rm -f "$ASSET_NAME"
+            rm -f "$ASSET_NAME"
             exit 1
         fi
 
-        # Remove old version if it exists
-        echo "Removing old nvim installation from $INSTALL_PATH..."
-        sudo rm -rf "$INSTALL_PATH"
+        echo "Preparing AppImage..."
+        chmod u+x "$ASSET_NAME"
         
-        echo "Extracting new version to /opt/..."
-        sudo tar -C /opt -xzf "$ASSET_NAME"
-        sudo rm -f "$ASSET_NAME" # Use -f to force remove
+        # Extract the AppImage to bypass potential FUSE requirements on headless servers
+        ./"$ASSET_NAME" --appimage-extract > /dev/null
+        
+        echo "Cleaning up old installations in /opt..."
+        sudo rm -rf /opt/nvim-linux64 /opt/nvim-linux-x86_64 /opt/nvim-appimage
+        
+        echo "Moving extracted Neovim to /opt/..."
+        sudo mv squashfs-root /opt/nvim-appimage
+        rm -f "$ASSET_NAME"
+
+        # The executable inside the extracted AppImage is located here:
+        BIN_PATH="/opt/nvim-appimage/usr/bin"
 
         # Add to path for *this script's session*
         export PATH="$PATH:$BIN_PATH"
